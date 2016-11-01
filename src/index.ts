@@ -67,7 +67,7 @@ export class Tester {
       return res;
     });
 
-    if (!target) throw new Error('invalid uri');
+    if (!target) throw new Error(`invalid uri ${method} ${path}`);
 
     const input = {query, body, session, result, params};
     let results: {query?: any, body?: any, session?: any, result?: any, params?: any} = {};
