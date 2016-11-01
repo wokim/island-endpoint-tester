@@ -69,10 +69,11 @@ export class Tester {
 
     if (!target) throw new Error('invalid uri');
 
-    const input = {query, body, params, session};
-    let results: {body?: any, params?: any, query?: any, session?: any, result?: any} = {};
-    for (const name of ['body', 'params', 'query', 'session', 'result']) {
+    const input = {query, body, session, result, params};
+    let results: {query?: any, body?: any, session?: any, result?: any, params?: any} = {};
+    for (const name of ['query', 'body', 'session', 'result', 'params']) {
       const schema: {sanitization: any, validation: any} = target.options.schema[name];
+      if (!schema) return;
       const sanitized = sanitize(schema.sanitization, input[name]);
       const r = validate(schema.validation, sanitized);
       if (!r.valid) throw new Error('validation failed');
