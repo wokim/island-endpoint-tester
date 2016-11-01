@@ -75,7 +75,6 @@ export class Tester {
       const schema: {sanitization: any, validation: any} = target.options.schema[name];
       if (!schema) continue;
       const sanitized = sanitize(schema.sanitization, input[name]);
-      console.log(name, schema.validation, sanitized);
       const r = validate(schema.validation, sanitized);
       if (!r.valid) throw new Error(`validation failed ${JSON.stringify(r.error)}`);
       results[name] = sanitized;
