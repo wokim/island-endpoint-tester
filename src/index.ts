@@ -40,22 +40,22 @@ export class Tester {
 
   static GET(uri: string, session?: any, result?: any) {
     const splits = Tester.splitUri(uri);
-    return Tester.execute('GET', splits.path, splits.query);
+    return Tester.execute('GET', splits.path, splits.query, {}, session, result);
   }
 
   static PUT(uri: string, body?: any, session?: any, result?: any) {
     const splits = Tester.splitUri(uri);
-    return Tester.execute('PUT', splits.path, splits.query, body, session);
+    return Tester.execute('PUT', splits.path, splits.query, body, session, result);
   }
 
   static POST(uri: string, body?: any, session?: any, result?: any) {
     const splits = Tester.splitUri(uri);
-    return Tester.execute('POST', splits.path, splits.query, body, session);
+    return Tester.execute('POST', splits.path, splits.query, body, session, result);
   }
 
   static DEL(uri: string, session?: any, result?: any) {
     const splits = Tester.splitUri(uri);
-    return Tester.execute('DEL', splits.path, splits.query, session);
+    return Tester.execute('DEL', splits.path, splits.query, {}, session, result);
   }
 
   private static execute(method: MethodTypes, path: string, query: string, body: any = {}, session: any = {}, result: any = {}) {
@@ -73,10 +73,11 @@ export class Tester {
     let results: {query?: any, body?: any, session?: any, result?: any, params?: any} = {};
     for (const name of ['query', 'body', 'session', 'result', 'params']) {
       const schema: {sanitization: any, validation: any} = target.options.schema[name];
-      if (!schema) return;
+      if (!schema) continue;
       const sanitized = sanitize(schema.sanitization, input[name]);
+      console.log(name, schema.validation, sanitized);
       const r = validate(schema.validation, sanitized);
-      if (!r.valid) throw new Error('validation failed');
+      if (!r.valid) throw new Error(`validation failed ${JSON.stringify(r.error)}`);
       results[name] = sanitized;
     }
     return results;
