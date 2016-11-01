@@ -1,0 +1,12 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "/Users/kson/Documents/github/npm-msgpack5/typings.json",
+    "raw": "file:/Users/kson/Documents/github/npm-msgpack5/typings.json",
+    "main": "index.d.ts",
+    "version": "3.4.0",
+    "global": false,
+    "name": "msgpack5",
+    "type": "typings"
+  }
+}
