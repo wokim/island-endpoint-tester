@@ -6,12 +6,42 @@ import { compileURL, matchURL } from './router';
 
 type MethodTypes = 'GET' | 'PUT' | 'POST' | 'DEL';
 
+export interface Endpoint {
+  name: string,
+  options: island.EndpointOptions,
+  method: string
+}
+
+export interface Input {
+  body?: any;
+  session?: any;
+  result?: any;
+}
+
+export interface Output {
+  body?: any;
+  session?: any;
+  result?: any;
+  query?: any;
+  params?: any;
+}
+
 export class Tester {
-  private static endpoints: {[method: string]: {name: string, options: island.EndpointOptions, method: string}[]} = {};
+  private static endpoints: {[method: string]: Endpoint[]} = {};
+  private static installed = false;
+  private static origin: {_module?, method?} = {};
+
   static install(islandModule: typeof island): void {
+    if (Tester.installed) return;
+
+    // save previous
+    Tester.origin._module = islandModule;
+    Tester.origin.method = islandModule.endpointController;
+
+    // install
     islandModule.endpointController = registerer => {
       return target => {
-        const result = _.map(target._endpointMethods, (v: any) => {
+        const e = _.map(target._endpointMethods, (v: any) => {
           const splits = (v.name as string).split(' ');
           return {
             name: splits[1],
@@ -19,9 +49,23 @@ export class Tester {
             method: splits[0]
           };
         });
-        Tester.endpoints = _.groupBy(result, 'method');
+        const endpoints = _.groupBy(e, 'method');
+        _.mergeWith(Tester.endpoints, endpoints, (target, src) => {
+          if (_.isArray(target)) return target.concat(src);
+        });
       };
     };
+    Tester.installed = true;
+  }
+
+  static uninstall() {
+    if (!Tester.installed) return;
+
+    // revert
+    Tester.origin._module.endpointController = Tester.origin.method;
+    Tester.origin = {};
+    Tester.endpoints = {};
+    Tester.installed = false;
   }
 
   static register(controller: typeof island.AbstractController) {
@@ -38,45 +82,67 @@ export class Tester {
     return {path, query};
   }
 
-  static GET(uri: string, session?: any, result?: any) {
+  static GET(uri: string, input: Input, sanitizeOnly = false) {
     const splits = Tester.splitUri(uri);
-    return Tester.execute('GET', splits.path, splits.query, {}, session, result);
+    return Tester.execute('GET', splits.path, {
+      query: splits.query,
+      body: {},
+      session: input.session,
+      result: input.result
+    }, sanitizeOnly);
   }
 
-  static PUT(uri: string, body?: any, session?: any, result?: any) {
+  static PUT(uri: string, input: Input, sanitizeOnly = false) {
     const splits = Tester.splitUri(uri);
-    return Tester.execute('PUT', splits.path, splits.query, body, session, result);
+    return Tester.execute('PUT', splits.path, {
+      query: splits.query,
+      body: input.body,
+      session: input.session,
+      result: input.result
+    }, sanitizeOnly);
   }
 
-  static POST(uri: string, body?: any, session?: any, result?: any) {
+  static POST(uri: string, input: Input, sanitizeOnly = false) {
     const splits = Tester.splitUri(uri);
-    return Tester.execute('POST', splits.path, splits.query, body, session, result);
+    return Tester.execute('POST', splits.path, {
+      query: splits.query,
+      body: input.body,
+      session: input.session,
+      result: input.result
+    }, sanitizeOnly);
   }
 
-  static DEL(uri: string, session?: any, result?: any) {
+  static DEL(uri: string, input: Input, sanitizeOnly = false) {
     const splits = Tester.splitUri(uri);
-    return Tester.execute('DEL', splits.path, splits.query, {}, session, result);
+    return Tester.execute('DEL', splits.path, {
+      query: splits.query,
+      body: {},
+      session: input.session,
+      result: input.result
+    }, sanitizeOnly);
   }
 
-  private static execute(method: MethodTypes, path: string, query: string, body: any = {}, session: any = {}, result: any = {}) {
-    let params;
+  private static execute(method: MethodTypes, path: string,
+                         input: Input & {query?: any, params?: any},
+                         sanitizeOnly: boolean): Output {
     const target = _.find(Tester.endpoints[method], endpoint => {
       const re = compileURL({url:endpoint.name});
       const res = matchURL(re, path);
-      if (res) params = res;
+      if (res) input.params = res;
       return res;
     });
 
     if (!target) throw new Error(`invalid uri ${method} ${path}`);
 
-    const input = {query, body, session, result, params};
-    let results: {query?: any, body?: any, session?: any, result?: any, params?: any} = {};
+    let results: Output = {};
     for (const name of ['query', 'body', 'session', 'result', 'params']) {
       const schema: {sanitization: any, validation: any} = target.options.schema[name];
       if (!schema) continue;
       const sanitized = sanitize(schema.sanitization, input[name]);
-      const r = validate(schema.validation, sanitized);
-      if (!r.valid) throw new Error(`validation failed ${JSON.stringify(r.error)}`);
+      if (!sanitizeOnly) {
+        const r = validate(schema.validation, sanitized);
+        if (!r.valid) throw new Error(`${sanitized} validation failed ${JSON.stringify(r.error)}`);
+      }
       results[name] = sanitized;
     }
     return results;
