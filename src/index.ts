@@ -137,7 +137,7 @@ export class Tester {
     let results: Output = {};
     for (const name of ['query', 'body', 'session', 'result', 'params']) {
       const schema: {sanitization: any, validation: any} = target.options.schema[name];
-      if (!schema) continue;
+      if (!schema || !input[name]) continue;
       const sanitized = sanitize(schema.sanitization, input[name]);
       if (!sanitizeOnly) {
         const r = validate(schema.validation, sanitized);
