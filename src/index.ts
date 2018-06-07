@@ -130,7 +130,7 @@ export class Tester {
       const res = matchURL(re, path);
       if (res) input.params = res;
       return res;
-    });
+    }) as Endpoint;
 
     if (!target) throw new Error(`invalid uri ${method} ${path}`);
 
