@@ -1,7 +1,7 @@
 {
   "name": "island-endpoint-tester",
-  "version": "1.0.1",
-  "description": "",
+  "version": "2.0.0-dev",
+  "description": "use with island",
   "main": "dist/index.js",
   "author": "wokim <wonshikkim.kr@gmail.com>",
   "scripts": {
@@ -12,12 +12,15 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@types/lodash": "^4.14.44",
-    "@types/qs": "^6.2.30",
-    "island": "1.0.3",
+    "island": "next",
     "schema-inspector": "^1.6.8"
   },
   "devDependencies": {
-    "@types/jasmine": "^2.5.38"
+    "@types/jasmine": "^2.8.8",
+    "@types/lodash": "^4.14.44",
+    "@types/node": "^10.3.1",
+    "@types/qs": "^6.5.1",
+    "jasmine": "^3.1.0",
+    "typescript": "^2.9.1"
   }
 }
