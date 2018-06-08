@@ -1,5 +1,7 @@
 import * as island from 'island';
 import * as _ from 'lodash';
+import deprecate from 'deprecated-decorator';
+
 import { sanitize, validate } from './schema.middleware';
 import * as qs from 'qs';
 import { compileURL, matchURL } from './router';
@@ -68,10 +70,8 @@ export class Tester {
     Tester.installed = false;
   }
 
-  static register(controller: typeof island.AbstractController) {
-    const rpcService = new island.RPCService();
-    rpcService.register = Promise.resolve() as any;
-    new controller(rpcService);
+  @deprecate({ version: '2.0.0' })
+  static register(_: any) {
   }
 
   private static splitUri(uri: string) {

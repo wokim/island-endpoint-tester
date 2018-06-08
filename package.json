@@ -12,6 +12,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "deprecated-decorator": "^0.1.6",
     "island": "next",
     "schema-inspector": "^1.6.8"
   },
