@@ -1,6 +1,6 @@
 {
   "name": "island-endpoint-tester",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "dist/index.js",
   "author": "wokim <wonshikkim.kr@gmail.com>",
@@ -12,12 +12,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@types/lodash": "^4.14.44",
-    "@types/qs": "^6.2.30",
-    "island": "1.0.3",
-    "schema-inspector": "^1.6.8"
+    "@types/lodash": "4.14.63",
+    "@types/qs": "6.2.31",
+    "island": "1.10.99-edge-lts.6",
+    "schema-inspector": "1.6.8"
   },
   "devDependencies": {
-    "@types/jasmine": "^2.5.38"
+    "@types/jasmine": "2.5.38"
   }
 }
