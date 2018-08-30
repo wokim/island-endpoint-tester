@@ -1,6 +1,6 @@
 {
   "name": "island-endpoint-tester",
-  "version": "2.0.0-dev",
+  "version": "2.1.0-dev",
   "description": "use with island",
   "main": "dist/index.js",
   "author": "wokim <wonshikkim.kr@gmail.com>",
