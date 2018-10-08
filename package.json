@@ -1,6 +1,6 @@
 {
   "name": "island-endpoint-tester",
-  "version": "2.1.0-rc.1",
+  "version": "2.1.0-rc.2",
   "description": "use with island",
   "main": "dist/index.js",
   "author": "wokim <wonshikkim.kr@gmail.com>",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "deprecated-decorator": "^0.1.6",
-    "island": "next",
+    "island": "^3.7.0-rc.1",
     "schema-inspector": "^1.6.8"
   },
   "devDependencies": {
